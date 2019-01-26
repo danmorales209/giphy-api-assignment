@@ -14,18 +14,28 @@ function getGifs() {
         let gifs = response.data;
 
         for (let i = 0; i < gifs.length; i++) {
-            let gifDiv = $("<div>").attr({ "static": "true", "index": i });
+            let gifDiv = $("<div>");
+            let innerDiv = $("<div>").addClass("card-body");
+            let gifText = $("<p>");
+
             gifDiv.addClass("card");
 
             gifDiv.append($("<img>").attr({
                 "src": gifs[i].images.fixed_height_still.url,
                 "alt": gifs[i].title,
-                "class": "card-img-top"
+                "class": "card-img-top",
+                "static": "true",
+                 "index": i
             }));
 
-            gifDiv.append($("<p>").text(gifs[i].rating));
+            gifText.addClass("card-body");
+            gifText.text(`Rating: ${gifs[i].rating}`);
+            innerDiv.append(gifText);
+            gifDiv.append(innerDiv);
 
-            gifDiv.on("click", function () {
+            //gifDiv.append($("<p>").text(gifs[i].rating));
+
+            gifDiv.children("img").on("click", function () {
                 changeGif($(this), gifs);
             });
 
@@ -42,11 +52,11 @@ function changeGif(object, data) {
 
     if (object.attr("static") === "true") {
 
-        object.children("img").attr("src", data[index].images.fixed_height.url);
+        object.attr("src", data[index].images.fixed_height.url);
         object.attr("static", "false");
     }
     else if (object.attr("static") === "false") {
-        object.children("img").attr("src", data[index].images.fixed_height_still.url);
+        object.attr("src", data[index].images.fixed_height_still.url);
         object.attr("static", "true");
     }
 }
