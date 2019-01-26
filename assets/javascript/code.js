@@ -15,12 +15,12 @@ function getGifs() {
 
         for (let i = 0; i < gifs.length; i++) {
             let gifDiv = $("<div>").attr({ "static": "true", "index": i });
-
-            gifDiv.addClass("cats")
+            gifDiv.addClass("card");
 
             gifDiv.append($("<img>").attr({
                 "src": gifs[i].images.fixed_height_still.url,
-                "alt": gifs[i].title
+                "alt": gifs[i].title,
+                "class": "card-img-top"
             }));
 
             gifDiv.append($("<p>").text(gifs[i].rating));
@@ -51,6 +51,28 @@ function changeGif(object, data) {
     }
 }
 
+function buildButtons(inArray) {
+    $("#buttons-container").empty();
+
+    for (let i = 0; i < inArray.length; i++) {
+        let newButton = $("<button>").text(inArray[i]);
+        newButton.addClass("btn btn-success btn-outline-light mx-sm-1 my-sm-1 gif-button");
+        $("#buttons-container").append(newButton);
+    }
+
+    // Add event listener to all buttons
+    $(".gif-button").on("click", getGifs);
+}
+
+function addTopic(inArray) {
+    let newTopic = $("#add-topic").val().trim();
+    $("#add-topic").val("");
+
+    inArray.push(newTopic);
+    buildButtons(inArray);
+
+}
+
 
 $(document).ready(function () {
     // define topics array
@@ -62,13 +84,12 @@ $(document).ready(function () {
     ];
 
     //iterate trhough topics array to dynamically generate buttons with jQuery
-    for (let i = 0; i < topics.length; i++) {
-        let newButton = $("<button>").text(topics[i]);
-        $("#buttons-container").append(newButton);
-    }
+    buildButtons(topics);
 
-    // Add initial event listener to all buttons
-    $("button").on("click", getGifs);
+    $("#add-topic-button").on("click", function (event) {
+        event.preventDefault();
+        addTopic(topics);
+    });
 
 
 })

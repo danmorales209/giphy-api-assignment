@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
 
 <head>
     <meta charset="UTF-8">
@@ -9,13 +9,37 @@
 
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
         crossorigin="anonymous"></script>
-        <script src="assets/javascript/code.js"></script>
+    <link rel="stylesheet" href="assets/css/reset.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/javascript/code.js"></script>
 
 </head>
 
 <body>
-    <div id="buttons-container"></div>
-    <div id="gifs-container"></div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm">
+                <div id="buttons-container"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-9">
+                <div id="gifs-container" class="card-columns"></div>
+            </div>
+            <div class="col-sm-3 border border-top-0 border-roght-0 border-bottom-0">
+                <form>
+                    <div class= "form-group">
+                        <label for="add-topic">Input a fantastical creature (like a Pheonix or something)</label>
+                        <input type="text" id="add-topic" class="form-control m-1" >
+                        <button id="add-topic-button" class = "btn btn-primary d-sm-block mx-auto">Add Creature</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
