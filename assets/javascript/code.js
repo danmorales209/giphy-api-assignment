@@ -1,7 +1,7 @@
 function getGifs() {
     $("#gifs-container").empty();
 
-    let queryURL = "http://api.giphy.com/v1/gifs/search?api_key=qCAxMUr8YJhkJ46mNoRpctyd48MOEhBe&fmt=json&limit=10";
+    let queryURL = "https://api.giphy.com/v1/gifs/search?api_key=qCAxMUr8YJhkJ46mNoRpctyd48MOEhBe&fmt=json&limit=10";
     let term = $(this).text();
 
     queryURL += "&q=" + term;
