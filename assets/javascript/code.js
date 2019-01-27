@@ -15,25 +15,36 @@ function getGifs() {
 
         for (let i = 0; i < gifs.length; i++) {
             let gifDiv = $("<div>");
-            let innerDiv = $("<div>").addClass("card-body");
+            let innerDiv = $("<div>").addClass("card-body p-sm-1 m-sm-1");
             let gifText = $("<p>");
+            let dlButton = $("<button>");
+
+            dlButton.text("Download");
+            dlButton.addClass("btn btn-dark d-block mx-auto")
+            dlButton.attr({
+                "href":gifs[i].images.fixed_height.url,
+                "download": gifs[i].title
+            });
+
+            /*dlButton.on("click", function() {
+                $(this).click();
+            })*/
 
             gifDiv.addClass("card");
 
             gifDiv.append($("<img>").attr({
                 "src": gifs[i].images.fixed_height_still.url,
                 "alt": gifs[i].title,
-                "class": "card-img-top",
+                "class": "card-img-top mb-sm-1",
                 "static": "true",
-                 "index": i
+                "index": i
             }));
 
-            gifText.addClass("card-body");
+            gifText.addClass("card-body m-sm-1 p-sm-1 text-center");
             gifText.text(`Rating: ${gifs[i].rating}`);
             innerDiv.append(gifText);
+            innerDiv.append(dlButton);
             gifDiv.append(innerDiv);
-
-            //gifDiv.append($("<p>").text(gifs[i].rating));
 
             gifDiv.children("img").on("click", function () {
                 changeGif($(this), gifs);
@@ -43,8 +54,6 @@ function getGifs() {
 
         }
     })
-
-
 }
 
 function changeGif(object, data) {
@@ -66,7 +75,7 @@ function buildButtons(inArray) {
 
     for (let i = 0; i < inArray.length; i++) {
         let newButton = $("<button>").text(inArray[i]);
-        newButton.addClass("btn btn-success btn-outline-light mx-sm-1 my-sm-1 gif-button");
+        newButton.addClass("btn btn-success btn-outline-light mx-sm-1 my-sm-1 float-left gif-button");
         $("#buttons-container").append(newButton);
     }
 
@@ -92,6 +101,8 @@ $(document).ready(function () {
         "mummy",
         "vampire"
     ];
+
+    var favTopics = [];
 
     //iterate trhough topics array to dynamically generate buttons with jQuery
     buildButtons(topics);

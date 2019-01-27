@@ -1,0 +1,17 @@
+#top {
+    position: sticky;
+    overflow: hidden;
+    top: 0;
+}
+
+.gif-button {
+    z-index: top;
+}
+
+form {
+    background-color: white;
+}
+
+#gifs-container {
+    margin-top: -15%;
+}
