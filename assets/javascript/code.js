@@ -1,13 +1,21 @@
+// global variable to save gifData objects.
 var savedGifs = [];
 
+
 function getGifs() {
+// function to generate 10 gifs using GIPHY API. Builds cards to store all the info, and adds the Download button and
+// save button and event listener
+
+    // clear the gif container of gifs using jQuery
     $("#gifs-container").empty();
 
+    // build the API search request
     let queryURL = "https://api.giphy.com/v1/gifs/search?api_key=qCAxMUr8YJhkJ46mNoRpctyd48MOEhBe&fmt=json&limit=10";
     let term = $(this).text();
 
     queryURL += "&q=" + term;
 
+    // ajax call to query API
     $.ajax({
         url: queryURL,
         method: "GET"
@@ -15,7 +23,10 @@ function getGifs() {
 
         let gifs = response.data;
 
+        // Returns an array of 10 objects. Iterates through each and builds the cards dynamically
         for (let i = 0; i < gifs.length; i++) {
+            
+            // Declare all tags for the card class. Based upon Bootstrap 4 with image at top
             let gifDiv = $("<div>").addClass("card");
             let innerDiv = $("<div>").addClass("card-body p-sm-1 m-sm-1 text-center");
             let gifText = $("<p>").addClass("card-body m-sm-1 p-sm-1 text-center");
@@ -23,8 +34,10 @@ function getGifs() {
             let saveButton = buildButton("Save");
             let buttonGroup = $("<div>").addClass("button-group d-block mx-auto btn-group-sm");
 
+            // Add IDs dynamically
             gifDiv.attr("id", `gif-card-${i}`);
 
+            // Add "download" to download button
             dlButton.attr({
                 "type": "submit",
                 "onclick": `window.open('${gifs[i].images.fixed_height.url}')`
@@ -33,6 +46,7 @@ function getGifs() {
             saveButton.attr("index", i);
             saveButton.addClass("save-button");
 
+            // add custom attributes to enable swapping static and dynamic gif
             gifDiv.append($("<img>").attr({
                 "src": gifs[i].images.fixed_height_still.url,
                 "alt": gifs[i].title,
@@ -43,17 +57,23 @@ function getGifs() {
 
             gifText.text(`Rating: ${gifs[i].rating}`);
 
+            // save button event listener
             saveButton.on("click", function () {
                 let index = $(this).attr("index");
                 let currentCard = $(`#gif-card-${index}`);
 
+                // Move the card to the saved card section
                 currentCard.appendTo($("#save-container"));
 
+                // add the corresponing GIPHY API object to the saved gifs array
                 savedGifs.push(gifs[i]);
+
+                // use JSON.stringify to convert the savedGifs array to a string to save in local Storage
                 window.localStorage.setItem("savedGifs", JSON.stringify(savedGifs));
 
+                // Remove the card from the gif display
                 $(this).remove();
-            })
+            });
 
             buttonGroup.append(dlButton);
             buttonGroup.append(saveButton);
@@ -63,6 +83,7 @@ function getGifs() {
 
             gifDiv.append(innerDiv);
 
+            // event listener for gif image
             gifDiv.children("img").on("click", function () {
                 changeGif($(this), gifs);
             });
@@ -73,11 +94,9 @@ function getGifs() {
     })
 }
 
-function pushToLocalStorage(object) {
-
-}
-
 function buildButton(inText) {
+    //simple function to build buttons inside cards, and add inText inside.
+    // Returns jQuery object
     let dummyButton = $("<button>");
 
     dummyButton.text(inText);
@@ -88,6 +107,8 @@ function buildButton(inText) {
 }
 
 function changeGif(object, data) {
+    // function to swtich between static and dynamic gif display. PAss in GIPHY API object as data source, and jQuery
+    // img as object
     let index = object.attr("index");
 
     if (object.attr("static") === "true") {
@@ -102,6 +123,7 @@ function changeGif(object, data) {
 }
 
 function buildButtons(inArray) {
+    // Build the initial buttons to get gifs
     $("#buttons-container").empty();
 
     for (let i = 0; i < inArray.length; i++) {
@@ -115,6 +137,7 @@ function buildButtons(inArray) {
 }
 
 function addTopic(inArray) {
+    // Function to add new topics from user form
     let newTopic = $("#add-topic").val().trim();
     $("#add-topic").val("");
 
@@ -124,7 +147,11 @@ function addTopic(inArray) {
 }
 
 function loadSavedGifs(gifs) {
+    // uses data stored in localStorage to build saved gifs. Data is saved in the same format as GIPHY API data
+    // pass in data from Gifs object array. Code is essentialy the same as the build gif image, except no save button is generated
+
     for (let i = 0; i < gifs.length; i++) {
+        // declare tags. Modeled using Bootstrap 4 cards
         let gifDiv = $("<div>").addClass("card");
         let innerDiv = $("<div>").addClass("card-body p-sm-1 m-sm-1 text-center");
         let gifText = $("<p>").addClass("card-body m-sm-1 p-sm-1 text-center");
@@ -165,6 +192,7 @@ function loadSavedGifs(gifs) {
 
 
 $(document).ready(function () {
+    // runs on page load, setup the page with inital selections
     // define topics array
     var topics = [
         "dragons",
@@ -184,23 +212,24 @@ $(document).ready(function () {
     //iterate trhough topics array to dynamically generate buttons with jQuery
     buildButtons(topics);
 
+    // Check for localStorage, and populates savedGifs with the data saved in the array, if any exists
     if (window.localStorage.getItem("savedGifs")) {
         savedGifs = JSON.parse(window.localStorage.getItem("savedGifs"));
     }
 
+    // Build the saved gifs cards if any data exists in localStorage
     loadSavedGifs(savedGifs);
 
+    // Add event listener on topic buttons to add gifs to the page on click
     $("#add-topic-button").on("click", function (event) {
         event.preventDefault();
         addTopic(topics);
     });
 
-
+    // Add clear event listener to clear button on the saved gifs section
     $("#clear-button").on("click", function (event) {
         event.preventDefault();
         $("#save-container").empty();
         window.localStorage.removeItem("savedGifs")
     })
-
-
 })
