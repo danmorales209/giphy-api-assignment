@@ -1,3 +1,5 @@
+var savedGifs = [];
+
 function getGifs() {
     $("#gifs-container").empty();
 
@@ -14,23 +16,22 @@ function getGifs() {
         let gifs = response.data;
 
         for (let i = 0; i < gifs.length; i++) {
-            let gifDiv = $("<div>");
-            let innerDiv = $("<div>").addClass("card-body p-sm-1 m-sm-1");
-            let gifText = $("<p>");
-            let dlButton = $("<button>");
+            let gifDiv = $("<div>").addClass("card");
+            let innerDiv = $("<div>").addClass("card-body p-sm-1 m-sm-1 text-center");
+            let gifText = $("<p>").addClass("card-body m-sm-1 p-sm-1 text-center");
+            let dlButton = buildButton("Download");
+            let saveButton = buildButton("Save");
+            let buttonGroup = $("<div>").addClass("button-group d-block mx-auto btn-group-sm");
 
-            dlButton.text("Download");
-            dlButton.addClass("btn btn-dark d-block mx-auto")
+            gifDiv.attr("id", `gif-card-${i}`);
+
             dlButton.attr({
-                "href":gifs[i].images.fixed_height.url,
-                "download": gifs[i].title
+                "type": "submit",
+                "onclick": `window.open('${gifs[i].images.fixed_height.url}')`
             });
 
-            /*dlButton.on("click", function() {
-                $(this).click();
-            })*/
-
-            gifDiv.addClass("card");
+            saveButton.attr("index", i);
+            saveButton.addClass("save-button");
 
             gifDiv.append($("<img>").attr({
                 "src": gifs[i].images.fixed_height_still.url,
@@ -40,10 +41,26 @@ function getGifs() {
                 "index": i
             }));
 
-            gifText.addClass("card-body m-sm-1 p-sm-1 text-center");
             gifText.text(`Rating: ${gifs[i].rating}`);
+
+            saveButton.on("click", function () {
+                let index = $(this).attr("index");
+                let currentCard = $(`#gif-card-${index}`);
+
+                currentCard.appendTo($("#save-container"));
+
+                savedGifs.push(gifs[i]);
+                window.localStorage.setItem("savedGifs", JSON.stringify(savedGifs));
+
+                $(this).remove();
+            })
+
+            buttonGroup.append(dlButton);
+            buttonGroup.append(saveButton);
+
             innerDiv.append(gifText);
-            innerDiv.append(dlButton);
+            innerDiv.append(buttonGroup);
+
             gifDiv.append(innerDiv);
 
             gifDiv.children("img").on("click", function () {
@@ -54,6 +71,20 @@ function getGifs() {
 
         }
     })
+}
+
+function pushToLocalStorage(object) {
+
+}
+
+function buildButton(inText) {
+    let dummyButton = $("<button>");
+
+    dummyButton.text(inText);
+    dummyButton.addClass("btn btn-dark btn-sm m-sm-1");
+
+    return dummyButton;
+
 }
 
 function changeGif(object, data) {
@@ -75,7 +106,7 @@ function buildButtons(inArray) {
 
     for (let i = 0; i < inArray.length; i++) {
         let newButton = $("<button>").text(inArray[i]);
-        newButton.addClass("btn btn-success btn-outline-light mx-sm-1 my-sm-1 float-left gif-button");
+        newButton.addClass("btn btn-success btn-outline-light mx-sm-1 my-sm-1 float-left  gif-button");
         $("#buttons-container").append(newButton);
     }
 
@@ -92,6 +123,46 @@ function addTopic(inArray) {
 
 }
 
+function loadSavedGifs(gifs) {
+    for (let i = 0; i < gifs.length; i++) {
+        let gifDiv = $("<div>").addClass("card");
+        let innerDiv = $("<div>").addClass("card-body p-sm-1 m-sm-1 text-center");
+        let gifText = $("<p>").addClass("card-body m-sm-1 p-sm-1 text-center");
+        let buttonGroup = $("<div>").addClass("button-group d-block mx-auto btn-group-sm");
+        let dlButton = buildButton("Download");
+
+        dlButton.attr({
+            "type": "submit",
+            "onclick": `window.open('${gifs[i].images.fixed_height.url}')`
+        });
+
+
+        gifDiv.append($("<img>").attr({
+            "src": gifs[i].images.fixed_height_still.url,
+            "alt": gifs[i].title,
+            "class": "card-img-top mb-sm-1",
+            "static": "true",
+            "index": i
+        }));
+
+        gifText.text(`Rating: ${gifs[i].rating}`);
+
+        buttonGroup.append(dlButton);
+
+        innerDiv.append(gifText);
+        innerDiv.append(buttonGroup);
+
+        gifDiv.append(innerDiv);
+
+        gifDiv.children("img").on("click", function () {
+            changeGif($(this), gifs);
+        });
+
+        $("#save-container").append(gifDiv);
+
+    }
+}
+
 
 $(document).ready(function () {
     // define topics array
@@ -99,18 +170,37 @@ $(document).ready(function () {
         "dragons",
         "zombie",
         "mummy",
-        "vampire"
+        "vampire",
+        "minotaur",
+        "cyclops",
+        "golem",
+        "medusa",
+        "unicorn",
+        "goblin",
+        "dwarf",
+        "gnome"
     ];
-
-    var favTopics = [];
 
     //iterate trhough topics array to dynamically generate buttons with jQuery
     buildButtons(topics);
+
+    if (window.localStorage.getItem("savedGifs")) {
+        savedGifs = JSON.parse(window.localStorage.getItem("savedGifs"));
+    }
+
+    loadSavedGifs(savedGifs);
 
     $("#add-topic-button").on("click", function (event) {
         event.preventDefault();
         addTopic(topics);
     });
+
+
+    $("#clear-button").on("click", function (event) {
+        event.preventDefault();
+        $("#save-container").empty();
+        window.localStorage.removeItem("savedGifs")
+    })
 
 
 })
